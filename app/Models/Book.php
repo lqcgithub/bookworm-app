@@ -32,6 +32,10 @@ class Book extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function discount(){
+        return $this->hasMany(Discount::class);
+    }
+
     public function scopeFilter($query, array $filters) // Query Scope ( custom query builder method )
     {
 //        dd(request('search'));
@@ -40,6 +44,7 @@ class Book extends Model
                 ->where('book_title', 'like', '%' . request('search') . '%')
                 ->orWhere('book_summary', 'like', '%' . request('search') . '%');
         }
+
 
         if (($filters['category'] ?? false)) {
             $query
@@ -55,5 +60,6 @@ class Book extends Model
             $query
                 ->whereHas('review', fn ($query) => $query->where('rating_start','=',request('rating')));
         }
+
     }
 }
