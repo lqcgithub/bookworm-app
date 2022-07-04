@@ -22,7 +22,7 @@ class Book extends Model
         'book_price',
     ];
 
-    protected $appends = ['most_discount', 'most_rating'];
+    protected $appends = ['most_discount', 'most_rating', 'most_review'];
 
     public function category()
     {
@@ -100,7 +100,7 @@ class Book extends Model
 
     public function scopeOnsale($query) //TO DO: sort by most discount
     {
-        return $query->with('discount')->get()->sortByDesc('most_discount')->take(10);
+        return $query->with('discount')->get()->sortByDesc('most_discount');
     }
 
     protected function mostRating(): Attribute // Laravel 9 Accessor
@@ -159,7 +159,7 @@ class Book extends Model
     protected function mostReview(): Attribute // Laravel 9 Accessor
     {
         return Attribute::make(
-            get: fn() => $this->review()->count(),
+            get: fn() => $this->review->count(),
 //            set: fn ($value) => strtolower($value),
         );
     }

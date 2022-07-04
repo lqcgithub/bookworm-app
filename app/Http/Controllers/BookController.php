@@ -72,13 +72,13 @@ class BookController extends Controller
 
     public function homepage()
     {
-//        $onsale = Book::onsale();
-        $recommeneded = Book::recommended();
-//        $popular = Book::popular();
+        $onsale = Book::onsale()->take(10);
+        $recommeneded = Book::recommended()->take(8);
+        $popular = Book::popular()->take(8);
         return [
-//            'onsale' => $onsale,
+            'onsale' => $onsale,
             'recommeneded' => $recommeneded,
-//            'popular' => $popular
+            'popular' => $popular
         ];
     }
 }
