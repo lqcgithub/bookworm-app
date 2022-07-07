@@ -18,11 +18,13 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-//Route::resource('books',BookController::class);
-//Route::get('books/onsale',[BookController::class,'onsale'])->name('books.onsale');
-//Route::get('books/featured',[BookController::class,'featured'])->name('books.featured');
 Route::get('books/homepage', [BookController::class, 'homepage'])->name('books.homepage');
+Route::get('books/onsale',[BookController::class,'onsale'])->name('books.onsale');
+Route::get('books/recommended',[BookController::class,'recommended'])->name('books.recommended');
+Route::get('books/popular',[BookController::class,'popular'])->name('books.popular');
+Route::resource('books',BookController::class);
+
+
 
 //Constrainst Route
 
