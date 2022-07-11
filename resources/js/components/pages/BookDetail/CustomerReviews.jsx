@@ -20,8 +20,8 @@ function CustomerReviews(props) {
     return (
         <div className="row justify-content-center">
             <h1 className="pt-5">Customer Reviews</h1>
-            <h1 className="pt-3">{props.book.avg_rating} Star</h1>
-            <span className="py-3 fs-3">({props.book.reviews ? props.book.reviews.length : ""})</span>
+            <h1 className="pt-3">{props.book.avg_rating!='0.00'?props.book.avg_rating+" Star":""}</h1>
+            <span className="py-3 fs-3">{props.book.reviews && props.book.reviews.length > 0 ? "(" + props.book.reviews.length+ ")" : ""}</span>
             {/*<ButtonGroup className="mb-2">*/}
             {/*    {radios.map((radio, idx) => (*/}
             {/*        <ToggleButton*/}
