@@ -33,7 +33,7 @@ function BookFeatureSection(props) {
     }, [url]);
     return (
         <div>
-            <div className="row text-center m-3">
+            <div className="row text-center my-4">
                 <h1>Featured Books</h1>
             </div>
             <div className="row justify-content-center">
