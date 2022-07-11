@@ -19,9 +19,7 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-//        dd(request(['search']));
-//        return Book::paginate($request->input('per_page', 5));
-        return BookResource::collection(Book::filter(request(['search', 'category', 'author', 'rating']))->paginate($request->input('per_page', 5)));
+        return BookResource::collection(Book::filter(request(['search', 'category', 'author', 'rating',]))->sort(request('sort'))->paginate($request->input('per_page', 5)));
     }
 
     /**
@@ -41,10 +39,9 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Book $book)
     {
-        $book = Book::findOrFail($id);
-        return $book;
+        return BookResource::make($book);
     }
 
     /**
@@ -92,4 +89,6 @@ class BookController extends Controller
     {
         return BookResource::collection(Book::popular()->take(8));
     }
+
+
 }

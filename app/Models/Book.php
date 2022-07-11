@@ -44,34 +44,7 @@ class Book extends Model
         return $this->hasOne(Discount::class);
     }
 
-    public function scopeFilter($query, array $filters) // Query Scope ( custom query builder method )
-    {
-//        dd(request('search'));
-        if (($filters['search'] ?? false)) { // isset operator in handy way.
-            $query
-                ->where('book_title', 'like', '%' . request('search') . '%')
-                ->orWhere('book_summary', 'like', '%' . request('search') . '%');
-        }
-
-
-        if (($filters['category'] ?? false)) {
-            $query
-                ->whereHas('category', fn($query) => $query->where('category_id', '=', request('category')));
-        }
-
-        if (($filters['author'] ?? false)) {
-            $query
-                ->whereHas('author', fn($query) => $query->where('author_id', '=', request('author')));
-        }
-
-        if (($filters['rating'] ?? false)) {
-            $query
-                ->whereHas('review', fn($query) => $query->where('rating_start', '=', request('rating')));
-        }
-
-    }
-
-//    public function getMostDiscountAttribute() // Laravel 8 Accessor
+    //    public function getMostDiscountAttribute() // Laravel 8 Accessor
 //    {
 //        $discountEndDate = $this->discount->discount_end_date;
 //        $discountAmount = 0;
@@ -81,7 +54,7 @@ class Book extends Model
 //        return number_format($discountAmount, 2);
 //    }
 
-    protected function finalPrice(): Attribute // Laravel 9 Accessor
+    protected function finalPrice(): Attribute // Laravel 9 Mutator
     {
         return Attribute::make(
             get: function () {
@@ -98,9 +71,18 @@ class Book extends Model
         );
     }
 
-    public function scopeOnsale($query) //TO DO: sort by most discount
+
+//    public function getMostReviewAttribute() // Laravel 8 Accessor
+//    {
+//        return $this->review()->count();
+//    }
+
+    protected function mostReview(): Attribute // Laravel 9 Accessor
     {
-        return $query->with('discount')->get()->sortByDesc('final_price');
+        return Attribute::make(
+            get: fn() => $this->review->count(),
+//            set: fn ($value) => strtolower($value),
+        );
     }
 
     protected function mostRating(): Attribute // Laravel 9 Accessor
@@ -145,28 +127,64 @@ class Book extends Model
         );
     }
 
+    public function scopeFilter($query, array $filters) // Query Scope ( custom query builder method )
+    {
+//        dd(request('search'));
+        if (($filters['search'] ?? false)) { // isset operator in handy way.
+            $query
+                ->where('book_title', 'like', '%' . request('search') . '%')
+                ->orWhere('book_summary', 'like', '%' . request('search') . '%');
+        }
+
+
+        if (($filters['category'] ?? false)) {
+            $query
+                ->whereHas('category', fn($query) => $query->where('category_id', '=', request('category')));
+        }
+
+        if (($filters['author'] ?? false)) {
+            $query
+                ->whereHas('author', fn($query) => $query->where('author_id', '=', request('author')));
+        }
+
+        if (($filters['rating'] ?? false)) {
+            $query
+                ->whereHas('review', fn($query) => $query->where('rating_start', '>=', request('rating')));
+        }
+
+    }
+
+    public function scopeOnsale($query) //TO DO: sort by most discount
+    {
+        return $query->with('discount')->get()->sortByDesc('final_price');
+    }
+
     public function scopeRecommended($query)
     {
 //        return $query->select('book.*')->join('review', 'book.id', 'review.book_id')->groupBy('book.id')->orderByDesc(DB::raw('avg(rating_start)'))->limit(8)->get();
         return $query->with('review')->get()->sortByDesc('most_rating');
     }
 
-//    public function getMostReviewAttribute() // Laravel 8 Accessor
-//    {
-//        return $this->review()->count();
-//    }
-
-    protected function mostReview(): Attribute // Laravel 9 Accessor
-    {
-        return Attribute::make(
-            get: fn() => $this->review->count(),
-//            set: fn ($value) => strtolower($value),
-        );
-    }
-
     public function scopePopular($query) //TO DO: sort by book_price
     {
         return $query->with('review')->get()->sortByDesc('most_review');
+    }
+
+    public function scopeSort($query, $sort){
+        if (($sort ?? false)) {
+            if ($sort ==='onsale') {
+                $query->with('discount')->get()->sortByDesc('final_price');
+            }
+            if ($sort ==='popular') {
+                $query->with('review')->get()->sortByDesc('most_review');
+            }
+            if ($sort ==='price') {
+                $query->orderBy('book_price', 'asc');
+            }
+            if ($sort ==='-price') {
+                $query->orderBy('book_price', 'desc');
+            }
+        }
     }
 
 
