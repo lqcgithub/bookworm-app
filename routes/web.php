@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +15,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
+Route::get('/shop', function () {
+    return view('home');
+});
+Route::get('/books/{id}', function () {
+    return view('home');
+});
+Route::get('/about', function () {
+    return view('home');
+});
+
+//Route::get('/cart',[CartController::class,'index'])->name('cart.index');

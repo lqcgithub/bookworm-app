@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBookRequest;
+use App\Http\Resources\BookResource;
+use App\Http\Resources\BookResourceCollection;
 use App\Models\Book;
 use App\Models\Discount;
 use Illuminate\Http\Request;
@@ -17,9 +19,7 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-//        dd(request(['search']));
-//        return Book::paginate($request->input('per_page', 5));
-        return Book::filter(request(['search', 'category', 'author', 'rating']))->paginate($request->input('per_page', 5));
+        return BookResource::collection(Book::filter(request(['search', 'category', 'author', 'rating',]))->sort(request('sort'))->paginate($request->input('per_page', 5)));
     }
 
     /**
@@ -39,10 +39,9 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Book $book)
     {
-        $book = Book::findOrFail($id);
-        return $book;
+        return BookResource::make($book);
     }
 
     /**
@@ -70,15 +69,26 @@ class BookController extends Controller
         return Book::destroy($id);
     }
 
-    public function homepage()
+    public function onsale()
     {
-        $onsale = Book::onsale()->take(10);
-        $recommeneded = Book::recommended()->take(8);
-        $popular = Book::popular()->take(8);
-        return [
-            'onsale' => $onsale,
-            'recommeneded' => $recommeneded,
-            'popular' => $popular
-        ];
+//        $result=[];
+//        $books = Book::onsale()->take(10);
+//        foreach ($books as $book){
+//            array_push($result, $book);
+//        }
+//        return response()->json(['data'=>$result]);
+        return BookResource::collection(Book::onsale()->take(10));
     }
+
+    public function recommended()
+    {
+        return BookResource::collection(Book::recommended()->take(8));
+    }
+
+    public function popular()
+    {
+        return BookResource::collection(Book::popular()->take(8));
+    }
+
+
 }
